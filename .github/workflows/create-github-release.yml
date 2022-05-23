@@ -1,7 +1,7 @@
 name: Create GitHub Release
 on:
   push:
-    # branches: [main]
+    branches: [main]
 jobs:
   tag_release:
     runs-on: ubuntu-latest

@@ -65,7 +65,7 @@ function InputField<T>({
   numberFormatConfig,
   fieldOnly = false,
 }: PropsWithChildren<InputFieldProps<T>>) {
-  const pathArr = (name as string).replaceAll('"', "").replaceAll("[", ".").replaceAll("]", "").split(".");
+  const pathArr = (name as string).replace(/"/g, "").replace(/\[/g, ".").replace(/\]/g, "").split(".");
   const stringName = pathArr.join(".");
   const { setFieldValue, initialValues } = useFormikContext<T>();
   const [field, meta] = useField({
@@ -138,7 +138,7 @@ function InputField<T>({
             if (type === "select" && multiple) {
               setFieldValue(
                 field.name,
-                Array.from((e as any as React.ChangeEvent<HTMLSelectElement>).target.selectedOptions, (option) => +option.value),
+                Array.from(((e as any) as React.ChangeEvent<HTMLSelectElement>).target.selectedOptions, (option) => +option.value),
               );
             } else {
               setFieldValue(field.name, +e.target.value);
