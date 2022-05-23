@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added 
+## [2.0.0] - 2022-05-23
 
--   Made package public :tada:
+### Added
+
+-   Made package open source / public :tada:
+
+[Unreleased]: https://github.com/neolution-ch/react-formik-ui/compare/2.0.0...HEAD
+
+[2.0.0]: https://github.com/neolution-ch/react-formik-ui/compare/efe3fa715b4439b1d96b794e031aa17d81a1e39a...2.0.0
