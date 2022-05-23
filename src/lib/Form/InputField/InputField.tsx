@@ -138,7 +138,7 @@ function InputField<T>({
             if (type === "select" && multiple) {
               setFieldValue(
                 field.name,
-                Array.from(((e as any) as React.ChangeEvent<HTMLSelectElement>).target.selectedOptions, (option) => +option.value),
+                Array.from((e as any as React.ChangeEvent<HTMLSelectElement>).target.selectedOptions, (option) => +option.value),
               );
             } else {
               setFieldValue(field.name, +e.target.value);
