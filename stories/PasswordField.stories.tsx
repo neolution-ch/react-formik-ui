@@ -6,7 +6,7 @@ import { Button, Col, Row } from "reactstrap";
 import { PasswordField, PasswordFieldProps } from "../src/lib/Form/PasswordField/PasswordField";
 
 export default {
-  title: "form-ui/PasswordField",
+  title: "formik-ui/PasswordField",
   component: PasswordField,
   args: {
     name: "password",

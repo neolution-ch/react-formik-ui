@@ -1,6 +1,12 @@
-# @neolution/form-ui
+# @neolution-ch/formik-ui
 
-The @neolution/form-ui package contains common form elements that can be reused. For a demonstration start the storybook in the root folder of this repo.
+The @neolution-ch/formik-ui package contains common formik form elements.
+
+## Storybook
+
+The storybook is a visual testing tool that makes it easy to test and tinker with the components.
+
+It can be found at https://neolution-ch.github.io/react-data-table
 
 ## Peer Dependencies
 

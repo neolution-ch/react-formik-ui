@@ -10,7 +10,7 @@ type T = {
 };
 
 export default {
-  title: "form-ui/InputField",
+  title: "formik-ui/InputField",
   component: InputField,
   args: {
     name: "firstName",
