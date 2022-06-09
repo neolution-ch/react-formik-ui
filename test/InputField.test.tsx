@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { Button } from "reactstrap/lib";
 import { NumberFormatProps } from "react-number-format";
 import { FormikWrapper, InputField } from "src";
+import { format } from "date-fns";
 
 function nameOf<T>(key: keyof T): keyof T {
   return key;
@@ -149,6 +150,61 @@ describe("<InputField />", () => {
       numberInput: 50,
       numberInput2: 42,
       numberInput3: undefined,
+    };
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expectedResult, expect.anything()));
+  });
+
+  test("date input", async () => {
+    interface T {
+      dateInput: Date;
+      dateInput2: Date;
+      dateInput3?: Date;
+    }
+
+    const dateFormat = "MM/dd/yyyy";
+
+    const form = (
+      <React.Fragment>
+        <InputField<T>
+          name="dateInput"
+          type="date"
+          datePickerConfig={{
+            dateFormat: dateFormat,
+          }}
+        />
+        <InputField<T> name="dateInput2" type="date" />
+        <InputField<T> name="dateInput3" type="date" />
+      </React.Fragment>
+    );
+
+    const now = new Date();
+
+    const { onSubmit, container } = setup<T>(
+      {
+        dateInput: now,
+        dateInput2: now,
+        dateInput3: undefined,
+      },
+      form,
+    );
+
+    const dateInput = container.querySelector("#dateInput") as HTMLInputElement;
+
+    expect(dateInput.value).toBe(format(now, dateFormat));
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 10);
+    userEvent.clear(dateInput);
+    userEvent.type(dateInput, format(futureDate, dateFormat));
+    expect(dateInput.value).toBe(format(futureDate, dateFormat));
+    futureDate.setHours(0, 0, 0, 0);
+
+    userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+    const expectedResult: T = {
+      dateInput: futureDate,
+      dateInput2: now,
+      dateInput3: undefined,
     };
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expectedResult, expect.anything()));
