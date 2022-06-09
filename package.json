@@ -26,6 +26,8 @@
     "tsc": "tsc"
   },
   "dependencies": {
+    "@types/react-datepicker": "^4.4.2",
+    "react-datepicker": "^4.8.0",
     "react-number-format": "^4.9.1"
   },
   "devDependencies": {

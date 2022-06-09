@@ -1,48 +1,19 @@
+/* eslint-disable max-lines */
 /* eslint-disable complexity */
 import * as React from "react";
-import { useField, FieldValidator, useFormikContext } from "formik";
+import { useField, useFormikContext } from "formik";
 
 import FormGroup from "reactstrap/lib/FormGroup";
 import Label from "reactstrap/lib/Label";
-import Input, { InputProps, InputType } from "reactstrap/lib/Input";
+import Input, { InputProps } from "reactstrap/lib/Input";
 import Col from "reactstrap/lib/Col";
 import FormFeedback from "reactstrap/lib/FormFeedback";
 import { PropsWithChildren } from "react";
 
 import NumberFormat, { NumberFormatProps } from "react-number-format";
 
-interface InputFieldProps<T> {
-  /** The name of the input. This is what formik will map to. */
-  name: keyof T;
-  /** The label for the input. Default: name */
-  label?: string;
-  /** The type of the input according to the normal HTML Input specifications */
-  type?: InputType;
-  /** The id of the input */
-  id?: string;
-  /** Mutable ref object to the input */
-  innerRef?: React.MutableRefObject<any>;
-  /** On Change handler */
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  /** On Blur handler */
-  onBlur?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  /** Whether the input should be disabled */
-  disabled?: boolean;
-  /** Placeholder of the input */
-  placeholder?: string;
-  /** Custom Validation function. Return error message string or undefined for success */
-  validation?: FieldValidator;
-  /** Autocomplete attribute according to the HTML specifications */
-  autoComplete?: string;
-  /** Parse value explcitly, useful for example for selects using which is a number  */
-  parseValueAs?: "string" | "number" | "boolean" | ((value: string) => any);
-  /** Whether the inpust should be multiple selectable (only valid for select) */
-  multiple?: boolean;
-  /** Number format config for the  */
-  numberFormatConfig?: NumberFormatProps;
-  /** Rener only the field without a label (defaults to false) */
-  fieldOnly?: boolean;
-}
+import DatePicker from "react-datepicker";
+import { InputFieldProps } from "./InputFieldProps";
 
 /**
  * Input Field component to render any kind of text input element.
@@ -64,6 +35,7 @@ function InputField<T>({
   parseValueAs = "string",
   numberFormatConfig,
   fieldOnly = false,
+  datePickerConfig,
 }: PropsWithChildren<InputFieldProps<T>>) {
   const pathArr = (name as string).replace(/"/g, "").replace(/\[/g, ".").replace(/\]/g, "").split(".");
   const stringName = pathArr.join(".");
@@ -82,7 +54,7 @@ function InputField<T>({
   }
 
   if (numberFormatConfig && !["text", "tel", "password"].includes(type)) {
-    throw Error(`Number Format config only works together with input type text,tel or passowrd. Field: "${stringName}"`);
+    throw Error(`Number Format config only works together with input type text, tel or passowrd. Field: "${stringName}"`);
   }
 
   const commonInputProps: NumberFormatProps<InputProps> & InputProps = {
@@ -102,58 +74,83 @@ function InputField<T>({
     defaultChecked: type === "checkbox" ? initialVal : undefined,
   };
 
-  const input = numberFormatConfig ? (
-    <NumberFormat<InputProps>
-      {...commonInputProps}
-      {...numberFormatConfig}
-      onValueChange={(values, sourceInfo) => {
-        setFieldValue(field.name, values.floatValue);
+  const getInput = () => {
+    const extendedType = numberFormatConfig ? "number-with-format" : type;
+    switch (extendedType) {
+      default:
+        return (
+          <Input
+            {...commonInputProps}
+            type={type}
+            onChange={(e) => {
+              switch (parseValueAs) {
+                default:
+                  setFieldValue(field.name, parseValueAs(e.target.value));
+                  break;
+                case "boolean":
+                  setFieldValue(field.name, !!e.target.value);
+                  break;
+                case "string":
+                  field.onChange(e);
+                  break;
+                case "number":
+                  if (type === "select" && multiple) {
+                    setFieldValue(
+                      field.name,
+                      Array.from((e as any as React.ChangeEvent<HTMLSelectElement>).target.selectedOptions, (option) => +option.value),
+                    );
+                  } else {
+                    setFieldValue(field.name, +e.target.value);
+                  }
+                  break;
+              }
 
-        if (onChange) {
-          onChange(sourceInfo.event);
-        }
-      }}
-      onChange={() => {
-        // left intionally blank. We need to override it to make sure the built in
-        // onChange coming from {...field} isn't fired.
-      }}
-      customInput={Input}
-    />
-  ) : (
-    <Input
-      {...commonInputProps}
-      type={type}
-      onChange={(e) => {
-        switch (parseValueAs) {
-          default:
-            setFieldValue(field.name, parseValueAs(e.target.value));
-            break;
-          case "boolean":
-            setFieldValue(field.name, !!e.target.value);
-            break;
-          case "string":
-            field.onChange(e);
-            break;
-          case "number":
-            if (type === "select" && multiple) {
-              setFieldValue(
-                field.name,
-                Array.from((e as any as React.ChangeEvent<HTMLSelectElement>).target.selectedOptions, (option) => +option.value),
-              );
-            } else {
-              setFieldValue(field.name, +e.target.value);
-            }
-            break;
-        }
+              if (onChange) {
+                onChange(e);
+              }
+            }}
+            render
+          >
+            {children}
+          </Input>
+        );
 
-        if (onChange) {
-          onChange(e);
-        }
-      }}
-    >
-      {children}
-    </Input>
-  );
+      case "date":
+        return (
+          <>
+            <DatePicker
+              {...(commonInputProps as any)}
+              selected={field.value}
+              dateFormat="dd.MM.yyyy"
+              {...datePickerConfig}
+              onChange={(date) => setFieldValue(field.name, date)}
+            ></DatePicker>
+          </>
+        );
+
+      case "number-with-format":
+        return (
+          <NumberFormat<InputProps>
+            {...commonInputProps}
+            {...numberFormatConfig}
+            onValueChange={(values, sourceInfo) => {
+              setFieldValue(field.name, values.floatValue);
+
+              if (onChange) {
+                onChange(sourceInfo.event);
+              }
+            }}
+            onChange={() => {
+              // left intionally blank. We need to override it to make sure the built in
+              // onChange coming from {...field} isn't fired.
+            }}
+            customInput={Input}
+          />
+        );
+    }
+  };
+
+  const input = getInput();
 
   return (
     <React.Fragment>
