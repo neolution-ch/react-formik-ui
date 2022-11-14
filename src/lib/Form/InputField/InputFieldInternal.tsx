@@ -1,9 +1,9 @@
 import { FieldInputProps } from "formik/dist/types";
 import { PropsWithChildren } from "react";
 import NumberFormat, { NumberFormatProps } from "react-number-format";
-import Input, { InputProps } from "reactstrap/lib/Input";
-import { InputFieldProps } from "./InputFieldProps";
 import DatePicker from "react-datepicker";
+import { InputProps, Input } from "reactstrap";
+import { InputFieldProps } from "./InputFieldProps";
 
 interface InputFieldInternalProps<T> extends PropsWithChildren<InputFieldProps<T>> {
   valid: boolean;

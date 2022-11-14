@@ -1,14 +1,11 @@
 import * as React from "react";
 import { useField, useFormikContext } from "formik";
 
-import FormGroup from "reactstrap/lib/FormGroup";
-import Label from "reactstrap/lib/Label";
-import Col from "reactstrap/lib/Col";
-import FormFeedback from "reactstrap/lib/FormFeedback";
 import { PropsWithChildren } from "react";
 
 import { InputFieldProps } from "./InputFieldProps";
 import { InputFieldInternal } from "./InputFieldInternal";
+import { Col, FormFeedback, FormGroup, Label } from "reactstrap";
 
 /**
  * Input Field component to render any kind of text input element.
